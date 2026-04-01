@@ -15,22 +15,41 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-PROMPT='Update gemini-cli-nix to the latest upstream release. Follow these steps:
+PROMPT=$(cat <<'EOF'
+Update gemini-cli-nix to the latest upstream release.
 
-1. Check the latest release using: curl -s https://api.github.com/repos/google-gemini/gemini-cli/releases/latest | jq -r '.tag_name' (do NOT use gh, it may not be authenticated)
-2. Compare with the current version in `package.nix` — if already up to date, stop
-3. Update `package.nix`: set the new `version`, fetch the new source `hash`, and rebuild twice to get the correct `npmDepsHash`
-4. Verify the build works by running `./result/bin/gemini --version`
-5. Scan all tracked files for passwords, tokens, API keys, private keys, or any sensitive/personal information — abort if anything is found
-6. Commit with message: "Update Gemini CLI to v<VERSION>"
-7. Push to origin/main'
+1. Check the latest release:
+   curl -s "https://api.github.com/repos/google-gemini/gemini-cli/releases/latest" | jq -r '.tag_name'
+   Do NOT use `gh`, it may not be authenticated.
+
+2. Compare with the current `version` in `package.nix` — if already up to date, stop.
+
+3. Update `package.nix`:
+   a. Set `version` to the new value (without leading `v`).
+   b. Set `hash = "";` -> run `nix build . 2>&1` -> find the line containing `got:` and extract the SRI hash (sha256-...=) -> update `hash`.
+   c. Set `npmDepsHash = "";` -> run `nix build . 2>&1` -> extract the correct hash from `got:` -> update `npmDepsHash`.
+
+4. Run `nix build .` — this must succeed with no errors.
+
+5. Verify: `./result/bin/gemini --version`
+
+6. Scan all tracked files (`git ls-files`) for passwords, tokens, API keys, private keys, or sensitive information — abort if found. Content-addressable hashes are NOT secrets.
+
+7. Commit: git add -A && git commit -m "Update Gemini CLI to v<VERSION>"
+
+8. Push: GIT_SSH_COMMAND="ssh -i ~/.ssh/self-host-github" git push origin main
+EOF
+)
 
 if [[ "${1:-}" == "--dry-run" ]]; then
     echo "Would run:"
     echo "  cd $SCRIPT_DIR"
     echo "  claude -p <prompt> --dangerously-skip-permissions"
+    echo ""
+    echo "Prompt:"
+    echo "$PROMPT"
     exit 0
 fi
 
 cd "$SCRIPT_DIR"
-claude -p "$PROMPT" --dangerously-skip-permissions
+exec claude -p "$PROMPT" --dangerously-skip-permissions
