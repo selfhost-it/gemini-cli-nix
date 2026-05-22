@@ -18,7 +18,7 @@
 }:
 
 let
-  version = "0.42.0";
+  version = "0.43.0";
 in
 buildNpmPackage {
   pname = "gemini-cli";
@@ -28,12 +28,12 @@ buildNpmPackage {
     owner = "google-gemini";
     repo = "gemini-cli";
     rev = "v${version}";
-    hash = "sha256-QYSzJdyjJ5SvPkI/uf/wu8MdM76W+djai6zD38IJpos=";
+    hash = "sha256-UFz+CQLGbzFlpa5Mhf/frnQJWttF35URvua1QTfoaZ0=";
   };
 
   nodejs = nodejs_22;
 
-  npmDepsHash = "sha256-hKNEJ/MAseYs8WLr36h40pYv+5nef8EPhZIfmPKYJPY=";
+  npmDepsHash = "sha256-7Pl020NKKzRpQftzEYRpQ0v1mkPnO3kVZITvFSLYztI=";
 
   # Native dependencies needed by keytar (libsecret) and node-gyp (python3).
   nativeBuildInputs = [ pkg-config python3 ];
