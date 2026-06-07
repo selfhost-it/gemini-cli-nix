@@ -1,8 +1,14 @@
 # gemini-cli-nix
 
-Always up-to-date Nix package for [Gemini CLI](https://github.com/google-gemini/gemini-cli) — Google's AI coding assistant in your terminal.
+> # ⚠️ Deprecated — no longer maintained
+>
+> Google has shifted its terminal AI tooling from Gemini CLI to **Antigravity**, so this package is no longer maintained and will receive no further updates.
+>
+> **Successor → [antigravity-cli-nix](https://github.com/selfhost-it/antigravity-cli-nix)** — the Nix package for Google's Antigravity CLI (`agy`).
+>
+> The flake here still builds the last packaged Gemini CLI version, but it will drift from (and eventually break against) upstream. Pin a specific commit if you need to keep using it.
 
-> **Beta**: This project is under active development by a solo maintainer and may break between updates. Use at your own risk. Contributions are welcome — feel free to open issues or submit pull requests!
+Nix package for [Gemini CLI](https://github.com/google-gemini/gemini-cli) — Google's AI coding assistant in your terminal.
 
 ## Why this package?
 
