@@ -25,6 +25,7 @@ The Gemini CLI in nixpkgs may lag behind upstream releases. This flake lets you:
 | `flake.nix` | Flake definition: inputs (nixpkgs, flake-utils), overlay, packages, app |
 | `package.nix` | Build recipe: fetches the GitHub monorepo, runs esbuild bundle, installs native addons |
 | `flake.lock` | Pinned inputs |
+| `update.sh` | Deterministic local update workflow (no LLM required) |
 | `.gitignore` | Excludes Nix build artifacts and editor files |
 
 ## Quick Start
@@ -102,9 +103,10 @@ nix run .
 
 2. Update the source hash:
    ```bash
-   nix-prefetch-github google-gemini gemini-cli --rev v0.32.0
+   nix store prefetch-file --unpack --json \
+     https://github.com/google-gemini/gemini-cli/archive/refs/tags/v0.32.0.tar.gz
    ```
-   Copy the `hash` value into `package.nix`.
+   Copy the returned SRI `hash` into `package.nix`.
 
 3. Set `npmDepsHash = "";` in `package.nix` and run:
    ```bash
@@ -115,6 +117,16 @@ nix run .
 4. Run `nix build .` again — it should succeed.
 
 5. Commit and push.
+
+The deterministic updater performs the same workflow without an LLM:
+
+```bash
+./update.sh --check              # report whether an update is available
+./update.sh --dry-run            # resolve and validate an update without changing files or building
+./update.sh --no-push            # update, build, verify and commit locally
+./update.sh --version 0.32.0     # target an explicit version
+./update.sh                      # update, build, verify, commit and push
+```
 
 ## Technical Details
 
